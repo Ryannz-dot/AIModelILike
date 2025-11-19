@@ -33,22 +33,26 @@ function App() {
 
   // Load initial data
   useEffect(() => {
-    const savedKey = storageService.getApiKey();
-    const savedModels = storageService.getSelectedModels();
-    const savedHistory = storageService.getHistory();
-    const settings = storageService.getSettings();
+    const loadInitialData = async () => {
+      const savedKey = await storageService.getApiKey();
+      const savedModels = storageService.getSelectedModels();
+      const savedHistory = storageService.getHistory();
+      const settings = storageService.getSettings();
 
-    setApiKey(savedKey);
-    setSelectedModels(savedModels);
-    setHistory(savedHistory);
-    setOptions({
-      jsonMode: settings.enableJsonMode,
-      streaming: settings.enableStreaming,
-    });
+      setApiKey(savedKey);
+      setSelectedModels(savedModels);
+      setHistory(savedHistory);
+      setOptions({
+        jsonMode: settings.enableJsonMode,
+        streaming: settings.enableStreaming,
+      });
 
-    if (!savedKey) {
-      setShowApiKeyModal(true);
-    }
+      if (!savedKey) {
+        setShowApiKeyModal(true);
+      }
+    };
+
+    loadInitialData();
   }, []);
 
   // Fetch models when API key changes
@@ -62,10 +66,15 @@ function App() {
   }, [apiKey]);
 
   // Handle API key save
-  const handleSaveApiKey = useCallback((key: string) => {
-    storageService.setApiKey(key);
-    setApiKey(key);
-    setShowApiKeyModal(false);
+  const handleSaveApiKey = useCallback(async (key: string) => {
+    try {
+      await storageService.setApiKey(key);
+      setApiKey(key);
+      setShowApiKeyModal(false);
+    } catch (error) {
+      console.error('Failed to save API key:', error);
+      alert('Failed to save API key. Please try again.');
+    }
   }, []);
 
   // Handle model selection change

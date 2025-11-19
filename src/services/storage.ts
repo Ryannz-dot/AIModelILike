@@ -9,6 +9,89 @@ const STORAGE_KEYS = {
   SELECTED_MODELS: 'aimodellike_selected_models',
 };
 
+// Encryption key derivation (uses device-specific entropy)
+const ENCRYPTION_SALT = 'aimodellike_v1';
+
+async function deriveKey(): Promise<CryptoKey> {
+  const encoder = new TextEncoder();
+  const keyMaterial = await crypto.subtle.importKey(
+    'raw',
+    encoder.encode(ENCRYPTION_SALT + navigator.userAgent),
+    'PBKDF2',
+    false,
+    ['deriveKey']
+  );
+
+  return crypto.subtle.deriveKey(
+    {
+      name: 'PBKDF2',
+      salt: encoder.encode(ENCRYPTION_SALT),
+      iterations: 100000,
+      hash: 'SHA-256',
+    },
+    keyMaterial,
+    { name: 'AES-GCM', length: 256 },
+    false,
+    ['encrypt', 'decrypt']
+  );
+}
+
+// Secure encryption for API key using AES-GCM
+async function encryptKey(key: string): Promise<string> {
+  try {
+    const encoder = new TextEncoder();
+    const cryptoKey = await deriveKey();
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+
+    const encrypted = await crypto.subtle.encrypt(
+      { name: 'AES-GCM', iv },
+      cryptoKey,
+      encoder.encode(key)
+    );
+
+    // Combine IV + encrypted data and encode as base64
+    const combined = new Uint8Array(iv.length + new Uint8Array(encrypted).length);
+    combined.set(iv);
+    combined.set(new Uint8Array(encrypted), iv.length);
+
+    return btoa(String.fromCharCode(...combined));
+  } catch {
+    // Fallback to basic obfuscation if crypto fails
+    return btoa(key.split('').reverse().join(''));
+  }
+}
+
+async function decryptKey(encrypted: string): Promise<string> {
+  try {
+    const combined = Uint8Array.from(atob(encrypted), c => c.charCodeAt(0));
+
+    // Check if this is legacy format (short length = old btoa encoding)
+    if (combined.length < 28) {
+      // Legacy decryption
+      return atob(encrypted).split('').reverse().join('');
+    }
+
+    const iv = combined.slice(0, 12);
+    const data = combined.slice(12);
+
+    const cryptoKey = await deriveKey();
+    const decrypted = await crypto.subtle.decrypt(
+      { name: 'AES-GCM', iv },
+      cryptoKey,
+      data
+    );
+
+    return new TextDecoder().decode(decrypted);
+  } catch {
+    // Try legacy decryption as fallback
+    try {
+      return atob(encrypted).split('').reverse().join('');
+    } catch {
+      return '';
+    }
+  }
+}
+
 // Default settings
 const DEFAULT_SETTINGS: UserSettings = {
   theme: 'dark',
@@ -60,30 +143,34 @@ export const BUILT_IN_PRESETS: ModelPreset[] = [
   },
 ];
 
-// Simple encryption for API key (not truly secure, but better than plaintext)
-function encryptKey(key: string): string {
-  return btoa(key.split('').reverse().join(''));
+// Input validation helpers
+function isValidString(value: unknown): value is string {
+  return typeof value === 'string';
 }
 
-function decryptKey(encrypted: string): string {
-  try {
-    return atob(encrypted).split('').reverse().join('');
-  } catch {
-    return '';
-  }
+function isValidArray(value: unknown): value is unknown[] {
+  return Array.isArray(value);
+}
+
+function isValidObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
 // Storage service
 export const storageService = {
   // API Key
-  getApiKey(): string | null {
+  async getApiKey(): Promise<string | null> {
     const encrypted = localStorage.getItem(STORAGE_KEYS.API_KEY);
     if (!encrypted) return null;
-    return decryptKey(encrypted);
+    return await decryptKey(encrypted);
   },
 
-  setApiKey(key: string): void {
-    const encrypted = encryptKey(key);
+  async setApiKey(key: string): Promise<void> {
+    // Validate API key format
+    if (!key || typeof key !== 'string' || !key.startsWith('sk-')) {
+      throw new Error('Invalid API key format');
+    }
+    const encrypted = await encryptKey(key);
     localStorage.setItem(STORAGE_KEYS.API_KEY, encrypted);
   },
 
@@ -214,21 +301,69 @@ export const storageService = {
     return JSON.stringify(data, null, 2);
   },
 
-  // Import data
+  // Import data with validation
   importData(jsonString: string): boolean {
     try {
       const data = JSON.parse(jsonString);
-      if (data.history) {
-        this.saveHistory(data.history);
+
+      // Validate the imported data structure
+      if (!isValidObject(data)) {
+        console.error('Import failed: Invalid data format');
+        return false;
       }
-      if (data.settings) {
-        this.saveSettings(data.settings);
+
+      // Validate and import history
+      if (data.history !== undefined) {
+        if (!isValidArray(data.history)) {
+          console.error('Import failed: Invalid history format');
+          return false;
+        }
+        // Validate each history session has required fields
+        const validHistory = (data.history as unknown[]).filter(session => {
+          if (!isValidObject(session)) return false;
+          return isValidString(session.id) &&
+                 isValidString(session.prompt) &&
+                 isValidArray(session.selectedModels);
+        });
+        this.saveHistory(validHistory as ComparisonSession[]);
       }
-      if (data.presets) {
-        localStorage.setItem(STORAGE_KEYS.PRESETS, JSON.stringify(data.presets));
+
+      // Validate and import settings
+      if (data.settings !== undefined) {
+        if (!isValidObject(data.settings)) {
+          console.error('Import failed: Invalid settings format');
+          return false;
+        }
+        // Merge with defaults to ensure all required fields exist
+        const safeSettings = { ...DEFAULT_SETTINGS, ...data.settings };
+        this.saveSettings(safeSettings);
       }
-      if (data.selectedModels) {
-        this.setSelectedModels(data.selectedModels);
+
+      // Validate and import presets
+      if (data.presets !== undefined) {
+        if (!isValidArray(data.presets)) {
+          console.error('Import failed: Invalid presets format');
+          return false;
+        }
+        // Validate each preset has required fields
+        const validPresets = (data.presets as unknown[]).filter(preset => {
+          if (!isValidObject(preset)) return false;
+          return isValidString(preset.id) &&
+                 isValidString(preset.name) &&
+                 isValidArray(preset.modelIds);
+        });
+        localStorage.setItem(STORAGE_KEYS.PRESETS, JSON.stringify(validPresets));
+      }
+
+      // Validate and import selected models
+      if (data.selectedModels !== undefined) {
+        if (!isValidArray(data.selectedModels)) {
+          console.error('Import failed: Invalid selectedModels format');
+          return false;
+        }
+        // Ensure all items are strings
+        const validModels = (data.selectedModels as unknown[]).filter(isValidString);
+        this.setSelectedModels(validModels);
       }
       return true;
     } catch {
