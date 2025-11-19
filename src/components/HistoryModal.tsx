@@ -74,8 +74,8 @@ export default function HistoryModal({
   const totalSpent = history.reduce((sum, s) => sum + s.totalCost, 0);
 
   return (
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
-      <div className="bg-bg-secondary rounded-card w-full max-w-2xl max-h-[80vh] border border-border-color animate-fadeIn flex flex-col">
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+      <div className="bg-bg-primary rounded-card w-full max-w-2xl max-h-[80vh] border border-border-color shadow-xl animate-fadeIn flex flex-col">
         <div className="flex items-center justify-between p-4 border-b border-border-color">
           <h2 className="text-lg font-semibold">History ({history.length})</h2>
           <button
@@ -94,7 +94,7 @@ export default function HistoryModal({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search history..."
-              className="w-full bg-bg-primary border border-border-color rounded-input pl-10 pr-4 py-2 text-sm focus:border-accent-primary transition-colors"
+              className="w-full bg-bg-secondary border border-border-color rounded-input pl-10 pr-4 py-2 text-sm focus:border-accent-primary focus:ring-1 focus:ring-accent-primary transition-colors"
             />
           </div>
         </div>

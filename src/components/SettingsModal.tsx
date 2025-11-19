@@ -51,8 +51,8 @@ export default function SettingsModal({ onClose }: SettingsModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
-      <div className="bg-bg-secondary rounded-card w-full max-w-md border border-border-color animate-fadeIn">
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+      <div className="bg-bg-primary rounded-card w-full max-w-md border border-border-color shadow-xl animate-fadeIn">
         <div className="flex items-center justify-between p-4 border-b border-border-color">
           <h2 className="text-lg font-semibold">Settings</h2>
           <button
@@ -192,7 +192,7 @@ export default function SettingsModal({ onClose }: SettingsModalProps) {
           </div>
 
           {/* Privacy notice */}
-          <div className="p-3 bg-bg-primary rounded-input">
+          <div className="p-3 bg-bg-tertiary rounded-input">
             <p className="text-xs text-text-tertiary">
               All data is stored locally in your browser. Nothing is sent to any server except your API requests to OpenRouter.
             </p>

@@ -14,8 +14,8 @@ export default function PromptSection({
   onOptionsChange,
 }: PromptSectionProps) {
   return (
-    <section className="bg-bg-secondary border border-border-color rounded-card p-6">
-      <h2 className="text-lg font-semibold mb-1">Prompt</h2>
+    <section className="bg-bg-primary border border-border-color rounded-card p-6 shadow-sm">
+      <h2 className="text-lg font-semibold mb-1 text-text-primary">Prompt</h2>
       <p className="text-sm text-text-secondary mb-4">
         Enter the prompt to test across models
       </p>
@@ -24,7 +24,7 @@ export default function PromptSection({
         value={prompt}
         onChange={(e) => onPromptChange(e.target.value)}
         placeholder="Enter your prompt here..."
-        className="w-full h-32 bg-bg-primary border border-border-color rounded-input px-4 py-3 text-sm resize-y focus:border-accent-primary transition-colors placeholder:text-text-tertiary"
+        className="w-full h-32 bg-bg-secondary border border-border-color rounded-input px-4 py-3 text-sm resize-y focus:border-accent-primary focus:ring-1 focus:ring-accent-primary transition-colors placeholder:text-text-tertiary"
       />
 
       <div className="flex flex-wrap gap-4 mt-4">

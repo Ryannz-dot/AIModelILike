@@ -16,19 +16,19 @@ export default function Header({
   onSettingsClick,
 }: HeaderProps) {
   return (
-    <header className="border-b border-border-color bg-bg-secondary">
-      <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+    <header className="border-b border-border-color bg-bg-primary shadow-sm">
+      <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <span className="text-2xl">🎯</span>
-          <h1 className="text-xl font-semibold">AI Model I Like</h1>
+          <h1 className="text-xl font-semibold text-text-primary">AI Model I Like</h1>
         </div>
 
         <div className="flex items-center gap-2">
           <button
             onClick={onApiKeyClick}
-            className={`flex items-center gap-2 px-3 py-2 rounded-button text-sm transition-colors ${
+            className={`flex items-center gap-2 px-3 py-2 rounded-button text-sm font-medium transition-colors ${
               apiKey
-                ? 'bg-bg-tertiary hover:bg-opacity-80 text-text-secondary'
+                ? 'bg-bg-tertiary hover:bg-border-color text-text-secondary'
                 : 'bg-accent-primary text-white hover:bg-accent-secondary'
             }`}
           >
@@ -38,7 +38,7 @@ export default function Header({
 
           <button
             onClick={onHistoryClick}
-            className="flex items-center gap-2 px-3 py-2 rounded-button text-sm bg-bg-tertiary hover:bg-opacity-80 text-text-secondary transition-colors"
+            className="flex items-center gap-2 px-3 py-2 rounded-button text-sm font-medium bg-bg-tertiary hover:bg-border-color text-text-secondary transition-colors"
           >
             <History size={16} />
             <span>History ({historyCount})</span>
@@ -46,7 +46,7 @@ export default function Header({
 
           <button
             onClick={onSettingsClick}
-            className="flex items-center gap-2 px-3 py-2 rounded-button text-sm bg-bg-tertiary hover:bg-opacity-80 text-text-secondary transition-colors"
+            className="flex items-center gap-2 px-3 py-2 rounded-button text-sm font-medium bg-bg-tertiary hover:bg-border-color text-text-secondary transition-colors"
           >
             <Settings size={16} />
           </button>

@@ -90,12 +90,12 @@ export default function ModelSelector({
   const getModelById = (id: string) => models.find(m => m.id === id);
 
   return (
-    <section className="bg-bg-secondary border border-border-color rounded-card p-6">
+    <section className="bg-bg-primary border border-border-color rounded-card p-6 shadow-sm">
       <div className="flex items-center justify-between mb-1">
-        <h2 className="text-lg font-semibold">Models</h2>
+        <h2 className="text-lg font-semibold text-text-primary">Models</h2>
         <button
           onClick={() => setShowBrowser(true)}
-          className="text-sm text-accent-primary hover:text-accent-secondary transition-colors"
+          className="text-sm font-medium text-accent-primary hover:text-accent-secondary transition-colors"
         >
           Browse Models
         </button>
@@ -116,7 +116,7 @@ export default function ModelSelector({
             return (
               <div
                 key={modelId}
-                className="flex items-center justify-between bg-bg-primary border border-border-color rounded-input px-4 py-3"
+                className="flex items-center justify-between bg-bg-secondary border border-border-color rounded-input px-4 py-3"
               >
                 <div>
                   <div className="flex items-center gap-2">
@@ -179,8 +179,8 @@ export default function ModelSelector({
 
       {/* Model browser modal */}
       {showBrowser && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
-          <div className="bg-bg-secondary rounded-card w-full max-w-2xl max-h-[80vh] border border-border-color animate-fadeIn flex flex-col">
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+          <div className="bg-bg-primary rounded-card w-full max-w-2xl max-h-[80vh] border border-border-color shadow-xl animate-fadeIn flex flex-col">
             <div className="flex items-center justify-between p-4 border-b border-border-color">
               <h2 className="text-lg font-semibold">Browse Models</h2>
               <button
@@ -199,7 +199,7 @@ export default function ModelSelector({
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search models..."
-                  className="w-full bg-bg-primary border border-border-color rounded-input pl-10 pr-4 py-2 text-sm focus:border-accent-primary transition-colors"
+                  className="w-full bg-bg-secondary border border-border-color rounded-input pl-10 pr-4 py-2 text-sm focus:border-accent-primary focus:ring-1 focus:ring-accent-primary transition-colors"
                 />
               </div>
             </div>

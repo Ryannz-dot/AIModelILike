@@ -26,8 +26,8 @@ export default function ApiKeyModal({ currentKey, onSave, onClose }: ApiKeyModal
   };
 
   return (
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
-      <div className="bg-bg-secondary rounded-card w-full max-w-md border border-border-color animate-fadeIn">
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+      <div className="bg-bg-primary rounded-card w-full max-w-md border border-border-color shadow-xl animate-fadeIn">
         <div className="flex items-center justify-between p-4 border-b border-border-color">
           <h2 className="text-lg font-semibold">OpenRouter API Key</h2>
           <button
@@ -39,7 +39,7 @@ export default function ApiKeyModal({ currentKey, onSave, onClose }: ApiKeyModal
         </div>
 
         <div className="p-4 space-y-4">
-          <div className="flex items-start gap-3 p-3 bg-bg-primary rounded-input">
+          <div className="flex items-start gap-3 p-3 bg-bg-tertiary rounded-input">
             <Shield className="text-accent-primary mt-0.5" size={18} />
             <p className="text-sm text-text-secondary">
               Your API key is stored locally in your browser and never sent to any server except OpenRouter.
@@ -56,7 +56,7 @@ export default function ApiKeyModal({ currentKey, onSave, onClose }: ApiKeyModal
                 value={key}
                 onChange={(e) => setKey(e.target.value)}
                 placeholder="sk-or-v1-..."
-                className="w-full bg-bg-primary border border-border-color rounded-input px-3 py-2 pr-10 text-sm focus:border-accent-primary transition-colors"
+                className="w-full bg-bg-secondary border border-border-color rounded-input px-3 py-2 pr-10 text-sm focus:border-accent-primary focus:ring-1 focus:ring-accent-primary transition-colors"
               />
               <button
                 type="button"

@@ -151,7 +151,7 @@ function App() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-bg-primary text-text-primary">
+    <div className="min-h-screen bg-bg-secondary text-text-primary">
       <Header
         apiKey={apiKey}
         historyCount={history.length}
@@ -160,30 +160,38 @@ function App() {
         onSettingsClick={() => setShowSettingsModal(true)}
       />
 
-      <main className="max-w-6xl mx-auto px-4 py-6 space-y-6">
-        <PromptSection
-          prompt={prompt}
-          options={options}
-          onPromptChange={setPrompt}
-          onOptionsChange={setOptions}
-        />
+      <main className="max-w-7xl mx-auto px-4 py-6">
+        <div className="mb-6">
+          <PromptSection
+            prompt={prompt}
+            options={options}
+            onPromptChange={setPrompt}
+            onOptionsChange={setOptions}
+          />
+        </div>
 
-        <ModelSelector
-          models={models}
-          selectedModels={selectedModels}
-          onModelsChange={handleModelsChange}
-          onRunTests={handleRunTests}
-          isLoading={isLoading}
-          disabled={!apiKey || !prompt.trim()}
-        />
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div className="lg:col-span-4">
+            <ModelSelector
+              models={models}
+              selectedModels={selectedModels}
+              onModelsChange={handleModelsChange}
+              onRunTests={handleRunTests}
+              isLoading={isLoading}
+              disabled={!apiKey || !prompt.trim()}
+            />
+          </div>
 
-        <ResultsSection
-          results={results}
-          loadingModels={loadingModels}
-          streamingContent={streamingContent}
-          isLoading={isLoading}
-          onClear={handleClearResults}
-        />
+          <div className="lg:col-span-8">
+            <ResultsSection
+              results={results}
+              loadingModels={loadingModels}
+              streamingContent={streamingContent}
+              isLoading={isLoading}
+              onClear={handleClearResults}
+            />
+          </div>
+        </div>
       </main>
 
       {/* Modals */}

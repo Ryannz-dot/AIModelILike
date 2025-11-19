@@ -65,9 +65,9 @@ export default function ResultsSection({
   const showLoadingCards = isLoading && results.length === 0;
 
   return (
-    <section className="bg-bg-secondary border border-border-color rounded-card p-6">
+    <section className="bg-bg-primary border border-border-color rounded-card p-6 shadow-sm">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-semibold">Results</h2>
+        <h2 className="text-lg font-semibold text-text-primary">Results</h2>
         {results.length > 0 && (
           <div className="flex items-center gap-4">
             <span className="text-sm text-text-secondary">
@@ -103,12 +103,12 @@ export default function ResultsSection({
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
           {showLoadingCards
             ? Object.entries(loadingModels).map(([modelId, status]) => (
                 <div
                   key={modelId}
-                  className="bg-bg-primary border border-border-color rounded-card p-4"
+                  className="bg-bg-secondary border border-border-color rounded-card p-4"
                 >
                   <div className="flex items-center justify-between mb-3">
                     <span className="font-medium text-sm">{modelId.split('/').pop()}</span>
@@ -140,7 +140,7 @@ export default function ResultsSection({
             : results.map(result => (
                 <div
                   key={result.modelId}
-                  className={`bg-bg-primary border rounded-card p-4 ${
+                  className={`bg-bg-secondary border rounded-card p-4 ${
                     result.error ? 'border-error' : 'border-border-color'
                   }`}
                 >
